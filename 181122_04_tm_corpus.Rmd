@@ -1,0 +1,36 @@
+---
+title: "Lab04_말뭉치(Corpus) 생성, 전처리"
+output:
+  html_document:
+    toc : true
+    toc_depth : 3
+    toc_float : true
+---
+
+## 01. 텍스트 마이닝 패키지 불러오기
+```{r eval=TRUE}
+library(tm)
+```
+
+## 02. 데이터 줄단위 불러오기
+```{r}
+testText <- readLines("data.txt")
+print(testText)
+str(testText)
+```
+
+## 03. 텍스트에서 말뭉치(Corpus)로 변환
+<pre>
+VectorSource : 벡터 형태의 소스를 만든다.
+
+[Usage]
+VectorSource(x)
+
+x : A vector giving the texts
+</pre>
+
+```{r}
+testText1 <- VectotSource(testText)
+testText1
+```
+

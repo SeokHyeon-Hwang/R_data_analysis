@@ -5,7 +5,7 @@ library(tm)
 library(dplyr)
 
 # 텍스트 불러오기
-txt<-readLines('C:/Users/ktm/text_mining.txt')
+txt<-readLines('C:/Users/ktm/downloads/text_mining.txt')
 txt
 
 # 텍스트를 코퍼스로 변환 
@@ -30,7 +30,7 @@ docs <- tm_map(docs, removePunction)
 #docs <- tm_map(docs, stemDocument)
 
 # 불용어 제거(text, mining, mine)
-sword2 <- c(stopwords('en'), 'text', 'mining', 'mine')
+sword2 <- c(stopwords('en'), 'text', 'mining', 'mine', 'doi', 'isbn')
 docs <- tm_map(docs, removeWords, sword2)
 
 # TDM (term document matrix) 만들기
@@ -46,7 +46,9 @@ head(d, 10)
 d
 
 # 워드클라우드
+#install.packages('wordcloud')
+library(wordcloud)
 library(RColorBrewer)
 wordcloud <- wordcloud(names(v), freq=v, min.freq=8, scale=c(5,1),
-                       colors=brewer.pal(7,'Set3'), random.order=F,
+                       colors=brewer.pal(5,'Set1'), random.order=F,
                        random.color=T)

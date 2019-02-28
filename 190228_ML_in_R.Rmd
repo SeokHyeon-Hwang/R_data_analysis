@@ -1,0 +1,124 @@
+---
+title: "Machine Learning with Boston data"
+author: "David H."
+date: "2019년 2월 28일"
+output: html_document
+---
+
+# 데이터 분할
+```{r}
+library(MASS)
+idx <- sample(1:nrow(Boston), size=nrow(Boston)*0.7, replace=F)
+tr<-Boston[idx,]
+te<-Boston[-idx,]
+```
+
+```{r}
+dim(tr) ; dim(te)
+```
+# 다중 회귀 분석
+```{r}
+lm.fit<-lm(medv~., data=tr)
+summary(lm.fit)
+```
+
+```{r}
+lm.fit2<-step(lm.fit, method='both')
+summary(lm.fit2)
+```
+# MSE
+```{r}
+lm.yhat2<-predict(lm.fit2, newdata=te)
+mean((lm.yhat2-te$medv)^2)
+```
+# 의사 결정 트리
+```{r}
+#install.packages('tree')
+library(tree)
+tree.fit <- tree(medv~., data=tr)
+summary(tree.fit)
+```
+
+```{r}
+plot(tree.fit)
+text(tree.fit, pretty=0)
+```
+
+```{r}
+tree.yhat<-predict(tree.fit, newdata=te)
+mean((tree.yhat-te$medv)^2)
+```
+
+```{r}
+library(rpart)
+rpart.fit<-rpart(medv~., data=tr)
+summary(rpart.fit)
+```
+
+```{r}
+library(rpart.plot)
+rpart.plot(rpart.fit, digits=3, type=0, extra=1, fallen.leaves=F, cex=1)
+```
+
+```{r}
+rpart.yhat<-predict(rpart.fit, newdata=te)
+mean((rpart.yhat-te$medv)^2)
+```
+# 인공신경망
+```{r}
+# 정규화 함수 작성
+norm<-function(x){return((x-min(x)/(max(x)-min(x))))}
+tr_norm<-as.data.frame(sapply(tr, norm))
+te_norm<-as.data.frame(sapply(te, norm))
+```
+# nnet 함수 사용 인공 신경망 분석
+```{r}
+library(nnet)
+nnet.fit<-nnet(medv~., data=tr_norm, size=5)
+nnet.yhat<-predict(nnet.fit, newdata=te_norm, type='raw')
+mean((nnet.yhat-te_norm$medv)^2)
+
+```
+# neuralnet 함수 사용한 인공 신경망 분석
+```{r}
+library(neuralnet)
+neural.fit<-neuralnet(medv~crim+zn+indus+chas+nox+rm+age+dis+rad+tax+ptratio+
+                        black+lstat, data=tr_norm, hidden=5)
+neural.results <- compute(neural.fit, te_norm[1:13])
+neural.yhat <- neural.results$net.result
+mean((neural.yhat-te_norm$medv)^2)
+```
+# 앙상블(랜덤포레스트)
+```{r}
+library(randomForest)
+set.seed(1)
+rf.fit<-randomForest(medv~., data=tr, mtry=6, importance=T)
+rf.fit
+```
+
+```{r}
+importance(rf.fit)
+```
+
+```{r}
+rf.yhat<-predict(rf.fit, newdata=te)
+mean((rf.yhat-te$medv)^2)
+```
+
+```{r}
+library(rpart)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
